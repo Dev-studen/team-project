@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import time
 
-## network 팀원 ui 코드 참고 도중 merge 실수로 코드 수정
 
 # 1. 페이지 기본 설정
 st.set_page_config(page_title="ABR 시뮬레이터 (7주차)", layout="wide")
