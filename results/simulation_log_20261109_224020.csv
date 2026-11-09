@@ -1,0 +1,4 @@
+Timestamp,Event_Type,Segment_ID,Req_Time,Res_Time,Download_Time(s),Bandwidth(Mbps),Packet_Loss(%),Bitrate,Buffer_Level(s)
+22:40:22.032,TEST_START,-,-,-,-,10.0,0,1080p,20.0
+22:40:37.043,BW_DROP,-,-,-,-,1.0,0,1080p,20.0
+22:40:47.049,BITRATE_ADJUSTED,-,-,-,-,1.0,0,240p,18.0
