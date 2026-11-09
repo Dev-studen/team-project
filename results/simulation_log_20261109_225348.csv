@@ -1,0 +1,4 @@
+Time,Event,Bandwidth(Mbps),Packet_Loss(%),Bitrate,Buffer(s)
+22:53:50.321,TEST_START,2.0,0.0,240p,15.0
+22:54:05.329,BW_SPIKE,15.0,0.0,240p,15.0
+22:54:15.335,BITRATE_ADJUSTED,15.0,0.0,1080p,20.0
