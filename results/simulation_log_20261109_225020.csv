@@ -1,0 +1,4 @@
+Time,Event,Bandwidth(Mbps),Packet_Loss(%),Bitrate,Buffer(s)
+22:50:22.178,TEST_START,5.0,0.0,720p,15.0
+22:50:42.189,BUFFER_WARNING,5.0,0.0,720p,1.5
+22:50:47.192,BITRATE_ADJUSTED,5.0,0.0,240p,3.0
