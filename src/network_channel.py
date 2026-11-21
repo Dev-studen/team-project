@@ -1,36 +1,53 @@
-class VirtualNetworkChannel:
-  
-    """
-    네트워크 대역폭 변동, 패킷 손실, RTT 지연 등을 모사하는 가상 채널 클래스입니다.
-    """
-    
-    def __init__(self, bandwidth: float, packet_loss: float, rtt: float):
-        """
-        초기 네트워크 상태를 설정합니다.
-        :param bandwidth: 초기 대역폭 (Mbps)
-        :param packet_loss: 패킷 손실률 (0.0 ~ 1.0)
-        :param rtt: 왕복 지연 시간 (ms)
-        """
-        self.bandwidth = bandwidth
-        self.packet_loss = packet_loss
-        self.rtt = rtt
+import random
+import math
 
-    def update_network_conditions(self, new_bandwidth: float, new_packet_loss: float, new_rtt: float):
-        """
-        시간 흐름이나 특정 시나리오에 따라 네트워크 상태를 동적으로 변경합니다.
-        """
-        pass  # 6주차에 세부 로직 구현 예정
+
+class VirtualNetworkChannel:
+    def __init__(self, bandwidth: float, packet_loss_percent: float, rtt: float):
+        self.bandwidth = max(0.1, bandwidth)
+        # UI에서 퍼센트(%)로 들어오는 값을 0.0~1.0 비율로 변환하여 저장
+        self.packet_loss = max(0.0, min(1.0, packet_loss_percent / 100.0))
+        self.rtt = max(1.0, rtt)
+
+    def update_network_conditions(self, new_bandwidth: float, new_packet_loss_percent: float, new_rtt: float):
+        self.bandwidth = max(0.0, new_bandwidth)
+        # UI 슬라이더 값(%)을 소수점 비율로 자동 변환 연동
+        self.packet_loss = max(0.0, min(1.0, new_packet_loss_percent / 100.0))
+        self.rtt = max(1.0, new_rtt)
+
+    def apply_random_fluctuation(self, volatility: float = 0.1):
+        bw_change_ratio = random.uniform(-volatility, volatility)
+        rtt_change_ratio = random.uniform(-volatility, volatility)
+
+        new_bw = self.bandwidth * (1 + bw_change_ratio)
+        new_rtt = self.rtt * (1 + rtt_change_ratio)
+
+        new_loss = self.packet_loss
+        if random.random() < 0.05:
+            new_loss += random.uniform(0.01, 0.05)
+
+        self.bandwidth = max(0.1, new_bw)
+        self.packet_loss = max(0.0, min(1.0, new_loss))
+        self.rtt = max(1.0, new_rtt)
 
     def calculate_throughput(self) -> float:
         """
-        현재의 대역폭, 패킷 손실률, RTT를 수학적 모델(예: Mathis equation)에 대입하여 
-        유효 처리량(Throughput)을 계산하고 반환합니다.
+        Mathis 방정식을 이용한 실시간 유효 처리량 연산 (UI 연동용)
         """
-        pass  # 7주차 수식 연산 고도화 시 구현 예정
+        if self.bandwidth <= 0.0 or self.packet_loss >= 1.0:
+            return 0.0
+
+        safe_rtt = max(1.0, self.rtt)
+
+        if self.packet_loss <= 0.0:
+            return self.bandwidth
+
+        # Mathis 방정식 적용 (시뮬레이터 UI 수치 스케일에 맞춘 상수 100.0 적용)
+        mathis_throughput = 100.0 / (safe_rtt * math.sqrt(self.packet_loss))
+
+        return min(self.bandwidth, mathis_throughput)
 
     def get_segment_download_time(self, segment_size: float) -> float:
-        """
-        요청된 비디오 세그먼트 크기와 현재 계산된 Throughput을 바탕으로 
-        다운로드에 걸리는 물리적 시간을 산출합니다.
-        """
-        pass  # 7주차 수식 연산 고도화 시 구현 예정
+        throughput = self.calculate_throughput()
+        safe_throughput = max(0.01, throughput)
+        return (segment_size / safe_throughput) + (self.rtt / 1000.0)
